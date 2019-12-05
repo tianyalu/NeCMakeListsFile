@@ -35,7 +35,7 @@ aux_source_directory(. DIR_SRCS)
 
 #### 1.2.3 `add_library`
 * 添加一个库  
-> 添加 一个库文件，名为<name>.  
+> 添加 一个库文件，名为`<name>`.  
 > 指定STATIC，SHARED，MODULE参数来指定库的类型。STATIC：静态库； SHARED：动态库； MODULE：在使用dyld的系统有效，若不支持dyld,等同于SHARED。  
 > EXCLUDE_FROM_ALL: 表示该库不会被默认构建。  
 > source1 source2...sourceN: 用来指定库的源文件。  
@@ -43,8 +43,8 @@ aux_source_directory(. DIR_SRCS)
 add_library(<name> [STATIC | SHARED | MODULE] [EXCLUDE_FROM_ALL] source1 source2 ... sourceN)
 ```
 * 导入预编译库 
-> 添加一个已存在的预编译库，名为<name>。  
-> 一般配合set_target_properties使用。
+> 添加一个已存在的预编译库，名为`<name>`。  
+> 一般配合`set_target_properties`使用。
 ```bash
 add_library(<name> <SHARED | STATIC | MODULE | UNKNOWN> IMPORTED)
 # 比如 
@@ -105,7 +105,7 @@ add_definitions(-DFOO -DDEBUG ...)
 ```
 
 #### 1.2.9 `add_subdirectory`
-如果当前目录下还有子目录时可以使用add_subdirectory, 子目录中也需要包含有CMakeLists.txt  
+如果当前目录下还有子目录时可以使用`add_subdirectory`, 子目录中也需要包含有CMakeLists.txt  
 ```bash
 # sub_dir指定包含CMakeLists.txt和源文件的子目录位置
 # binary_dir是输出路径，一般可以不指定
