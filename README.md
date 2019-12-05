@@ -292,6 +292,112 @@ android {
 }
 ```
 
+## 二、实操
+Android Studio 新建Native项目。
+### 2.1 CMakeLists.txt文件
+```cmake
+# 指定CMake最小支持版本
+cmake_minimum_required(VERSION 3.4.1)
+# 设置头文件目录
+# 通过这个变量拿到当前cmakeLists.txt文件的目录
+include_directories(${CMAKE_SOURCE_DIR}/inc)
+# 添加一个库，根据native-lib.cpp源文件编译一个native-lib的动态库
+add_library( # Sets the name of the library.
+        native-lib
+        # Sets the library as a shared library.
+        SHARED
+        # Provides a relative path to your source file(s).
+        native-lib.cpp)
+# 设置第三方so库的路径
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${CMAKE_SOURCE_DIR}/../jniLibs/${CMAKE_ANDROID_ARCH_ABI}")
+# 查找系统库，这里查找的是系统日志库，并赋值给变量log-lib
+# 默认会在D:\AndroidDev\AndroidStudio\sdk\ndk-bundle\platforms\android-22\arch-arm\usr\lib 查找系统库
+#[[find_library( # Sets the name of the path variable.
+        log-lib
+        # Specifies the name of the NDK library that
+        # you want CMake to locate.
+        log)]]
+
+# 设置依赖的库（第一个参数必须为目标模块，顺序不能换）
+target_link_libraries( # Specifies the target library.
+        native-lib
+        fmod
+        fmodL
+        # Links the target library to the log library
+        # included in the NDK.
+        log)
+```
+### 2.2 native-lib.cpp文件
+```c++
+#include <jni.h>
+#include <string>
+#include <android/log.h>
+#include <fmod.hpp>
+
+using namespace FMOD;
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_sty_ne_cmakelists_file_MainActivity_stringFromJNI(
+        JNIEnv *env,
+        jobject /* this */) {
+    System *system;
+    System_Create(&system);
+    unsigned int version;
+    system->getVersion(&version);
+    __android_log_print(ANDROID_LOG_ERROR, "TEST", "FMOD Version: %08x", version);
+    std::string hello = "Hello from C++";
+    return env->NewStringUTF(hello.c_str());
+}
+```
+
+### 2.3 build.gradle 文件
+```groovy
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "29.0.1"
+    defaultConfig {
+        applicationId "com.sty.ne.cmakelists.file"
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+                abiFilters "armeabi-v7a" //指定本地库的CPU架构
+            }
+        }
+        ndk {
+            abiFilters "armeabi-v7a" //指定第三方库的CPU架构
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+}
+
+dependencies {
+    //...
+}
+```
+### 2.4 项目目录结构如下 
+![image](https://github.com/tianyalu/NeCMakeListsFile/blob/master/show/directory.png)  
+
+编译生成APK后可以在apk包中的lib目录下发现生成的armeabi-v7a目录，下面是生成的动态库。允许后可以看到控制台输出fmod的版本号。
+
+
 
 
 
