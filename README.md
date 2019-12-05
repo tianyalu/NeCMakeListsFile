@@ -395,7 +395,10 @@ dependencies {
 ### 2.4 项目目录结构如下 
 ![image](https://github.com/tianyalu/NeCMakeListsFile/blob/master/show/directory.png)  
 
-编译生成APK后可以在apk包中的lib目录下发现生成的armeabi-v7a目录，下面是生成的动态库。允许后可以看到控制台输出fmod的版本号。
+编译生成APK后可以在apk包中的lib目录下发现生成的armeabi-v7a目录，下面是生成的动态库。允许后可以看到控制台输出fmod的版本号。 
+
+**特别注意：**  
+fmod.jar文件必须要放到libs目录下，否则MainActivity中的`System.loadLibrary("native-lib");`会报错的。
 
 
 
